@@ -1,6 +1,8 @@
 # syntax=docker/dockerfile:experimental
 
-FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
+#FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
+FROM nvidia/cuda:11.0.3-cudnn8-devel-ubuntu18.04
+#FROM nvidia/cuda
 
 ENV NVIDIA_VISIBLE_DEVICES ${NVIDIA_VISIBLE_DEVICES:-all}
 ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
@@ -21,6 +23,8 @@ RUN useradd -m $USERNAME && \
 
 # install package
 ENV DEBIAN_FRONTEND=noninteractive
+RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && rm /etc/apt/sources.list.d/cuda.list
+#COPY sources.list /etc/apt/sources.list
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
         curl \
@@ -106,6 +110,7 @@ RUN apt-get install -y qtdeclarative5-dev
 RUN apt-get install -y libglib2.0-0
 RUN apt-get install -y tcl-dev tk-dev
 
+RUN python -m pip install --upgrade pip && pip install setuptools==63.2.0
 RUN pip install tensorboard
 RUN pip install cycler python-dateutil kiwisolver pyparsing matplotlib
 
